@@ -95,6 +95,7 @@ class Board
     self[new_pos] = piece_at(old_pos)
     piece_at(old_pos).pos = new_pos
     self[old_pos] = nil
+    piece_at(new_pos).check_if_king
   end
   
   def can_jump_opponent?(old_pos, new_pos)
