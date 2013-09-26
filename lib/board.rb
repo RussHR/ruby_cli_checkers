@@ -59,6 +59,22 @@ class Board
     end
   end
   
+  def perform_moves!(*move_sequence)
+    raise InvalidMoveError if move_sequence.length < 2
+    remaining_moves = move_sequence
+    old_pos, new_pos = remaining_moves[0], remaining_moves[1]
+    
+    if piece_at(old_pos).slide_moves.include?(new_pos)
+      perform_slide(old_pos, new_pos)
+    else
+      until remaining_moves.length < 2
+        old_pos = remaining_moves.shift
+        new_pos = remaining_moves.first
+        perform_jump(old_pos, new_pos)
+      end
+    end
+  end
+  
   private
   
   def generate_rows
