@@ -11,9 +11,10 @@ class Board
     @rows[row][col]
   end
   
-  def []=(pos, piece) #will Piece need to access this?
+  def []=(pos, piece)
     row, col = pos
     @rows[row][col] = piece
+    piece.pos = pos unless piece.nil?
   end
   
   def render # Game will call this
@@ -93,7 +94,6 @@ class Board
   
   def move_piece(old_pos, new_pos)
     self[new_pos] = piece_at(old_pos)
-    piece_at(old_pos).pos = new_pos
     self[old_pos] = nil
     piece_at(new_pos).check_if_king
   end
