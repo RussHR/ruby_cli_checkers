@@ -12,7 +12,7 @@ class Board
   end
   
   def []=(pos, piece) #will Piece need to access this?
-    row, col = pos[0], pos[1]
+    row, col = pos
     @rows[row][col] = piece
   end
   
@@ -27,6 +27,20 @@ class Board
       puts
     end    
     nil
+  end
+  
+  def unoccupied?(pos)
+    @rows[pos].nil?
+  end
+  
+  def perform_slide(old_pos, new_pos)
+    # possible_pos = piece_at(old_pos).slide_moves
+    # with possible_pos, check if the space is occupied
+    # if not, move it
+    # otherwise, raise an error
+  end
+  
+  def perform_jump
   end
   
   private
@@ -48,5 +62,9 @@ class Board
         @rows[row_num][col_num] = piece
       end
     end
+  end
+  
+  def piece_at(pos)
+    self[pos]
   end
 end
