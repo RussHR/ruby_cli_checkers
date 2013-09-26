@@ -8,6 +8,13 @@ class Piece
     @pos = pos
   end
   
-  def render
+  def render # will be called through Board's render
+    symbol[color]
+  end
+  
+  private
+  
+  def symbol
+    { red: "R", white: "W" }
   end
 end
