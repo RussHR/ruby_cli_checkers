@@ -36,7 +36,7 @@ class Piece
     { red: "R", white: "W" }
   end
   
-  def can_become_king? #this can be a check done after every time the piece moves
+  def can_become_king?
     color == red ? pos[0] == 7 : pos[0] == 0
   end
   

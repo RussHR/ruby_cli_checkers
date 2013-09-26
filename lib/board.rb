@@ -29,18 +29,33 @@ class Board
     nil
   end
   
-  def unoccupied?(pos)
-    @rows[pos].nil?
-  end
-  
   def perform_slide(old_pos, new_pos)
-    # possible_pos = piece_at(old_pos).slide_moves
-    # with possible_pos, check if the space is occupied
-    # if not, move it
-    # otherwise, raise an error
+    raise InvalidMoveError if unoccupied?(old_pos)
+    
+    possible_pos = piece_at(old_pos).slide_moves
+    possible_pos.select! { |pos| on_board?(pos) && unoccupied?(pos) }
+
+    if possible_pos.include?(new_pos)
+      move_piece(old_pos, new_pos)
+    else
+      raise InvalidMoveError
+    end
   end
   
-  def perform_jump
+  def perform_jump(old_pos, new_pos)
+    raise InvalidMoveError if unoccupied?(old_pos)
+    
+    possible_pos = piece_at(old_pos).jump_moves
+    possible_pos.select! do |pos|
+      on_board?(pos) && can_jump_opponent?(old_pos, pos)
+    end
+    
+    if possible_pos.include?(new_pos)
+      move_piece(old_pos, new_pos)
+      remove_jumped_piece(old_pos, new_pos)
+    else
+      raise InvalidMoveError
+    end
   end
   
   private
@@ -66,5 +81,37 @@ class Board
   
   def piece_at(pos)
     self[pos]
+  end
+  
+  def on_board?(pos)
+    pos.all? {|num| (0..7).cover?(num) }
+  end
+  
+  def unoccupied?(pos)
+    piece_at(pos).nil?
+  end
+  
+  def move_piece(old_pos, new_pos)
+    self[new_pos] = piece_at(old_pos)
+    piece_at(old_pos).pos = new_pos
+    self[old_pos] = nil
+  end
+  
+  def can_jump_opponent?(old_pos, new_pos)
+    between_pos = find_between_pos(old_pos, new_pos)
+    !unoccupied?(between_pos) && enemy_pieces?(old_pos, between_pos)
+  end
+  
+  def enemy_pieces?(old_pos, new_pos)
+    piece_at(old_pos).color != piece_at(new_pos).color
+  end
+  
+  def find_between_pos(old_pos, new_pos)
+    [(old_pos[0] + new_pos[0])/2, (old_pos[1] + new_pos[1])/2]
+  end
+  
+  def remove_jumped_piece(old_pos, new_pos)
+    between_pos = find_between_pos(old_pos, new_pos)
+    self[between_pos] = nil
   end
 end
