@@ -59,6 +59,14 @@ class Board
     end
   end
   
+  def perform_moves(*move_sequence)
+    if valid_move_seq?(*move_sequence)
+      perform_moves!(*move_sequence)
+    else
+      raise InvalidMoveError
+    end
+  end
+  
   def perform_moves!(*move_sequence)
     raise InvalidMoveError if move_sequence.length < 2
     remaining_moves = move_sequence
@@ -75,16 +83,27 @@ class Board
     end
   end
   
-  # def valid_move_seq?(move_sequence)
-  #   begin
-  #     # dup self
-  #     # call perform_moves!(move_sequence) on the duplicate
-  #   rescue
-  #     false
-  #   else
-  #     true
-  #   end
-  # end
+  def valid_move_seq?(*move_sequence)
+    begin
+      board_copy = self.deep_dup
+      board_copy.perform_moves!(*move_sequence)
+    rescue
+      false
+    else
+      true
+    end
+  end
+  
+  def deep_dup
+    board_copy = Board.new(false)
+    
+    pieces.each do |piece|
+      next if piece.nil?
+      board_copy[piece.pos] = piece.dup
+    end
+    
+    board_copy
+  end
   
   private
   
@@ -145,16 +164,5 @@ class Board
   def remove_jumped_piece(old_pos, new_pos)
     between_pos = find_between_pos(old_pos, new_pos)
     self[between_pos] = nil
-  end
-  
-  def deep_dup
-    board_copy = Board.new(false)
-    
-    pieces.each do |piece|
-      next if piece.nil?
-      board_copy[piece.pos] = piece.dup
-    end
-    
-    board_copy
   end
 end

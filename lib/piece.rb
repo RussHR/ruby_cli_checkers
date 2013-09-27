@@ -1,6 +1,6 @@
 class Piece
-  attr_reader :color, :board # these should NEVER need to be changed
-  attr_accessor :pos # remember to update position in both piece and board
+  attr_reader :color, :board
+  attr_accessor :pos
   
   def initialize(color, board, pos)
     @color, @board, @pos = color, board, pos
