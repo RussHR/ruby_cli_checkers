@@ -1,9 +1,9 @@
 class Board
   attr_reader :rows # do external classes need to change the Board's @rows?
   
-  def initialize
+  def initialize(original = true)
     generate_rows
-    set_pieces
+    set_pieces if original
   end
   
   def [](pos)
@@ -75,7 +75,22 @@ class Board
     end
   end
   
+  # def valid_move_seq?(move_sequence)
+  #   begin
+  #     # dup self
+  #     # call perform_moves!(move_sequence) on the duplicate
+  #   rescue
+  #     false
+  #   else
+  #     true
+  #   end
+  # end
+  
   private
+  
+  def pieces
+    @rows.flatten
+  end
   
   def generate_rows
     @rows = Array.new(8) { Array.new(8) }
@@ -130,5 +145,16 @@ class Board
   def remove_jumped_piece(old_pos, new_pos)
     between_pos = find_between_pos(old_pos, new_pos)
     self[between_pos] = nil
+  end
+  
+  def deep_dup
+    board_copy = Board.new(false)
+    
+    pieces.each do |piece|
+      next if piece.nil?
+      board_copy[piece.pos] = piece.dup
+    end
+    
+    board_copy
   end
 end
